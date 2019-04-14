@@ -4,8 +4,8 @@ package digit
 type Resource struct {
 	Subject    string            `json:"subject"`              // REQUIRED: URI that identifies the entity.
 	Aliases    []string          `json:"aliases,omitempty"`    // Zero or more  URI strings that identify the same entity as the "subject" URI
-	Properties map[string]string `json:"properties,omitempty"` //
-	Links      []Link            `json:"links,omitempty"`      //
+	Properties map[string]string `json:"properties,omitempty"` // Zero of more name/value pairs whose names are URIs and whose values are strings.  Properties are used to convey additional information about the subject of the JRD.
+	Links      []Link            `json:"links,omitempty"`      // Links to resources that are related or connected to this one.
 }
 
 // NewResource returns a fully initialized resource.  The "subject" is a URI that identifies the entity.
