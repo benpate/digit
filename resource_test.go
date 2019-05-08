@@ -30,6 +30,7 @@ func ExampleResource() {
 	// Create and populate the resource object.
 	resource := NewResource("acct:sarah@sky.net").
 		Alias("http://sky.net/sarah").
+		Alias("http://linkedin.com/in/sarah-connor").
 		Property("http://sky.net/ns/role", "employee")
 
 	fmt.Print(resource.Subject)
