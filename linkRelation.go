@@ -157,7 +157,7 @@ func LinkRelations() []LinkRelation {
 			Reference:    "[RFC5988]",
 		}, {
 			RelationName: "version-history",
-			Description:  "points to a resource containing the version history for the context.",
+			Description:  "Points to a resource containing the version history for the context.",
 			Reference:    "[RFC5829]",
 		}, {
 			RelationName: "via",
