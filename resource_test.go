@@ -23,6 +23,13 @@ func TestResource(t *testing.T) {
 	assert.Equal(t, resource.Links[0].RelationType, "http://webfinger.example/rel/profile-page")
 	assert.Equal(t, resource.Links[0].MediaType, "text/html")
 	assert.Equal(t, resource.Links[0].Href, "https://sky.net/sarah")
+
+	link := NewLink("http://example.com", "text/html", "https://connor.com/john", "John Connor")
+
+	resource.AppendLink(*link)
+
+	assert.Equal(t, 2, len(resource.Links))
+	assert.Equal(t, "text/html", resource.Links[1].MediaType)
 }
 
 func ExampleResource() {

@@ -29,6 +29,18 @@ func TestLink(t *testing.T) {
 
 	link.Title("es", "")
 	assert.Equal(t, 1, len(link.Titles))
+
+	link.Property("", "")
+	assert.Zero(t, len(link.Properties))
+	assert.Equal(t, "", link.Properties["Author"])
+
+	link.Property("Author", "John Connor")
+	assert.Equal(t, 1, len(link.Properties))
+	assert.Equal(t, "John Connor", link.Properties["Author"])
+
+	link.Property("Author", "")
+	assert.Equal(t, 0, len(link.Properties))
+	assert.Equal(t, "", link.Properties["Author"])
 }
 
 func ExampleLink() {
