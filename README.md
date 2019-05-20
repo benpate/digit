@@ -13,3 +13,7 @@ This library (will eventually) helps you create responses to WebFinger queries t
 
 * https://webfinger.net - primary website for WebFinger protocol
 * https://tools.ietf.org/html/rfc7033 - IETF specification
+
+## Pull Requests Welcome
+
+This library is a work in progress, and will benefit from your experience reports, use cases, and contributions.  If you have an idea for making Rosetta better, send in a pull request.  We're all in this together! 👉
