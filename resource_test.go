@@ -1,6 +1,7 @@
 package digit
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -30,6 +31,13 @@ func TestResource(t *testing.T) {
 
 	assert.Equal(t, 2, len(resource.Links))
 	assert.Equal(t, "text/html", resource.Links[1].MediaType)
+
+	if bytes, err := json.Marshal(resource); err != nil {
+		t.Log(err)
+		t.Fail()
+	} else {
+		assert.Equal(t, `{"subject":"acct:sarah@sky.net","aliases":["http://sky.net/sarah","http://other.website.com/sarah-connor"],"properties":{"http://sky.net/ns/role":"employee"},"links":[{"rel":"http://webfinger.example/rel/profile-page","type":"text/html","href":"https://sky.net/sarah","titles":{"und":"Sarah Connor"}},{"rel":"http://example.com","type":"text/html","href":"https://connor.com/john","titles":{"und":"John Connor"}}]}`, string(bytes))
+	}
 }
 
 func ExampleResource() {
