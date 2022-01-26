@@ -10,37 +10,35 @@ type Link struct {
 }
 
 // NewLink returns a fully initialized Link object.
-func NewLink(relationType string, mediaType string, href string, title string) *Link {
-	result := &Link{
+func NewLink(relationType string, mediaType string, href string) Link {
+	result := Link{
 		RelationType: relationType,
 		MediaType:    mediaType,
 		Href:         href,
 		Titles:       map[string]string{},
 		Properties:   map[string]string{},
 	}
-
-	result.Title("und", title)
 	return result
 }
 
 // Title populates a title value for the Link.
-func (link *Link) Title(name string, value string) *Link {
+func (link Link) Title(language string, title string) Link {
 
-	if name == "" {
+	if language == "" {
 		return link
 	}
 
-	if value == "" {
-		delete(link.Titles, name)
+	if title == "" {
+		delete(link.Titles, language)
 		return link
 	}
 
-	link.Titles[name] = value
+	link.Titles[language] = title
 	return link
 }
 
 // Property populates a property of the link.  Name must be a URI (called a property identifier) and value must be a string.
-func (link *Link) Property(name string, value string) *Link {
+func (link Link) Property(name string, value string) Link {
 
 	if name == "" {
 		return link

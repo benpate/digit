@@ -1,7 +1,6 @@
 package digit
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,7 +8,7 @@ import (
 
 func TestLink(t *testing.T) {
 
-	link := NewLink("example", "text/plain", "http://example.com", "Example")
+	link := NewLink("example", "text/plain", "http://example.com").Title("Example", "und")
 
 	assert.Equal(t, 1, len(link.Titles))
 
@@ -45,12 +44,10 @@ func TestLink(t *testing.T) {
 
 func ExampleLink() {
 
-	link := NewLink("http://webfinger.example/rel/profile-page", "text/html", "https://www.example.com/~bob", "Bob Smith")
+	// Create a new link with a link relation, mime-type, and href
+	link := NewLink("http://webfinger.example/rel/profile-page", "text/html", "https://www.example.com/~bob")
 
-	fmt.Print(link.Titles["und"]) // Default language is "und" for undetermined.
-	// Output: Bob Smith
-
-	// You can also set a specific language on the link object itself
+	// You can also set link titles in multiple languages
 	link.Title("en-us", "The Magical World of Steve")
 	link.Title("fr", "Le Mondo Magique de Steve")
 }

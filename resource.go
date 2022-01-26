@@ -9,8 +9,8 @@ type Resource struct {
 }
 
 // NewResource returns a fully initialized resource.  The "subject" is a URI that identifies the entity.
-func NewResource(subject string) *Resource {
-	return &Resource{
+func NewResource(subject string) Resource {
+	return Resource{
 		Subject:    subject,
 		Aliases:    []string{},
 		Properties: map[string]string{},
@@ -19,26 +19,38 @@ func NewResource(subject string) *Resource {
 }
 
 // Alias adds an alias (additional URI) to this Resource.  It returns a pointer to the Resource so that calls can be chained.
-func (resource *Resource) Alias(URI string) *Resource {
+func (resource Resource) Alias(URI string) Resource {
 	resource.Aliases = append(resource.Aliases, URI)
 	return resource
 }
 
 // Property adds a property to this Resource.  It returns a pointer to the Resource so that calls can be chained.
-func (resource *Resource) Property(name string, value string) *Resource {
+func (resource Resource) Property(name string, value string) Resource {
 	resource.Properties[name] = value
 	return resource
 }
 
 // Link adds a link to this Resource.  It returns a pointer to the Resource so that calls can be chained.
-func (resource *Resource) Link(relationType string, mediaType string, href string, title string) *Resource {
-	link := NewLink(relationType, mediaType, href, title)
-	resource.Links = append(resource.Links, *link)
+func (resource Resource) Link(relationType string, mediaType string, href string) Resource {
+	resource.Links = append(resource.Links, NewLink(relationType, mediaType, href))
 	return resource
 }
 
-// AppendLink adds a link to this Resource.  It returns a pointer to the Resource so that calls can be chained.
-func (resource *Resource) AppendLink(link Link) *Resource {
+// AddLink adds a link to this Resource.  It returns a pointer to the Resource so that calls can be chained.
+func (resource Resource) AddLink(link Link) Resource {
 	resource.Links = append(resource.Links, link)
 	return resource
+}
+
+// FindLink searches links to find one that matches the provided relationType.
+// If none is found, then an empty link is returned
+func (resource Resource) FindLink(relationType string) Link {
+
+	for _, link := range resource.Links {
+		if link.RelationType == relationType {
+			return link
+		}
+	}
+
+	return NewLink(relationType, "", "")
 }
