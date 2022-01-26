@@ -22,7 +22,7 @@ func NewLink(relationType string, mediaType string, href string) Link {
 }
 
 // Title populates a title value for the Link.
-func (link Link) Title(language string, title string) Link {
+func (link Link) Title(title string, language string) Link {
 
 	if language == "" {
 		return link

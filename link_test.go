@@ -8,25 +8,25 @@ import (
 
 func TestLink(t *testing.T) {
 
-	link := NewLink("example", "text/plain", "http://example.com").Title("und", "Example")
+	link := NewLink("example", "text/plain", "http://example.com").Title("Example", "und")
 
 	require.Equal(t, 1, len(link.Titles))
 
 	link = link.Title("", "")
 	require.Equal(t, 1, len(link.Titles))
 
-	link = link.Title("en-us", "")
+	link = link.Title("", "en-us")
 	require.Equal(t, 1, len(link.Titles))
 
-	link = link.Title("und", "New Title")
+	link = link.Title("New Title", "und")
 	require.Equal(t, 1, len(link.Titles))
 	require.Equal(t, "New Title", link.Titles["und"])
 
-	link = link.Title("es", "New Title En Español")
+	link = link.Title("New Title En Español", "es")
 	require.Equal(t, 2, len(link.Titles))
 	require.Equal(t, "New Title En Español", link.Titles["es"])
 
-	link = link.Title("es", "")
+	link = link.Title("", "es")
 	require.Equal(t, 1, len(link.Titles))
 
 	link = link.Property("", "")
