@@ -1,44 +1,60 @@
 package digit
 
 import (
-	"encoding/json"
 	"fmt"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestResource(t *testing.T) {
 
-	resource := NewResource("acct:sarah@sky.net")
-
-	resource.Alias("http://sky.net/sarah").
+	resource := NewResource("acct:sarah@sky.net").
+		Alias("http://sky.net/sarah").
 		Alias("http://other.website.com/sarah-connor").
 		Property("http://sky.net/ns/role", "employee").
-		Link("http://webfinger.example/rel/profile-page", "text/html", "https://sky.net/sarah")
+		Link(RelationTypeProfile, "text/html", "https://sky.net/sarah")
 
 	// Verify that all properties have been populated correctly.
-	assert.Equal(t, resource.Subject, "acct:sarah@sky.net")
-	assert.Equal(t, resource.Aliases[0], "http://sky.net/sarah")
-	assert.Equal(t, resource.Aliases[1], "http://other.website.com/sarah-connor")
-	assert.Equal(t, resource.Properties["http://sky.net/ns/role"], "employee")
-	assert.Equal(t, resource.Links[0].RelationType, RelationTypeProfile)
-	assert.Equal(t, resource.Links[0].MediaType, "text/html")
-	assert.Equal(t, resource.Links[0].Href, "https://sky.net/sarah")
+	require.Equal(t, resource.Subject, "acct:sarah@sky.net")
+	require.Equal(t, resource.Aliases[0], "http://sky.net/sarah")
+	require.Equal(t, resource.Aliases[1], "http://other.website.com/sarah-connor")
+	require.Equal(t, resource.Properties["http://sky.net/ns/role"], "employee")
+	require.Equal(t, resource.Links[0].RelationType, RelationTypeProfile)
+	require.Equal(t, resource.Links[0].MediaType, "text/html")
+	require.Equal(t, resource.Links[0].Href, "https://sky.net/sarah")
 
 	link := NewLink(RelationTypeProfile, "text/html", "https://john.connor.com").Title("John Connor", "en")
 
-	resource.AddLink(link)
+	resource = resource.AddLink(link)
 
-	assert.Equal(t, 2, len(resource.Links))
-	assert.Equal(t, "text/html", resource.Links[1].MediaType)
+	require.Equal(t, 2, len(resource.Links))
+	require.Equal(t, "text/html", resource.Links[1].MediaType)
 
-	if bytes, err := json.Marshal(resource); err != nil {
-		t.Log(err)
-		t.Fail()
-	} else {
-		assert.Equal(t, `{"subject":"acct:sarah@sky.net","aliases":["http://sky.net/sarah","http://other.website.com/sarah-connor"],"properties":{"http://sky.net/ns/role":"employee"},"links":[{"rel":"http://webfinger.example/rel/profile-page","type":"text/html","href":"https://sky.net/sarah","titles":{"und":"Sarah Connor"}},{"rel":"http://example.com","type":"text/html","href":"https://connor.com/john","titles":{"und":"John Connor"}}]}`, string(bytes))
-	}
+}
+
+func TestFindLink(t *testing.T) {
+
+	resource := NewResource("acct:sarah@sky.net").
+		Link(RelationTypeAvatar, "img/webp", "https://sara.sky.net/profile.webp").
+		Link(RelationTypeProfile, "text/html", "https://sara.sky.net/profile").
+		Link(RelationTypeSelf, "application/activity+json", "https://sara.sky.net/activity.json")
+
+	avatar := resource.FindLink(RelationTypeAvatar)
+	require.Equal(t, "img/webp", avatar.MediaType)
+	require.Equal(t, "https://sara.sky.net/profile.webp", avatar.Href)
+
+	profile := resource.FindLink(RelationTypeProfile)
+	require.Equal(t, "text/html", profile.MediaType)
+	require.Equal(t, "https://sara.sky.net/profile", profile.Href)
+
+	activity := resource.FindLink(RelationTypeSelf)
+	require.Equal(t, "application/activity+json", activity.MediaType)
+	require.Equal(t, "https://sara.sky.net/activity.json", activity.Href)
+
+	missing := resource.FindLink("missing-type")
+	require.Equal(t, "", missing.MediaType)
+	require.Equal(t, "", missing.Href)
 }
 
 func ExampleResource() {
