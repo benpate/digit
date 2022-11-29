@@ -12,9 +12,9 @@ type Resource struct {
 func NewResource(subject string) Resource {
 	return Resource{
 		Subject:    subject,
-		Aliases:    []string{},
-		Properties: map[string]string{},
-		Links:      []Link{},
+		Aliases:    make([]string, 0),
+		Properties: make(map[string]string),
+		Links:      make([]Link, 0),
 	}
 }
 
@@ -53,4 +53,23 @@ func (resource Resource) FindLink(relationType string) Link {
 	}
 
 	return NewLink(relationType, "", "")
+}
+
+// FilterLinks updates the resource to only include links that match the provided relationType.
+// If the provided relationType is empty, then no change is performed.
+func (resource *Resource) FilterLinks(relationType string) {
+
+	if relationType == "" {
+		return
+	}
+
+	filteredLinks := make([]Link, len(resource.Links))
+
+	for _, link := range resource.Links {
+		if link.RelationType == relationType {
+			filteredLinks = append(filteredLinks, link)
+		}
+	}
+
+	resource.Links = filteredLinks
 }
