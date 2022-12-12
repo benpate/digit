@@ -57,6 +57,41 @@ func TestFindLink(t *testing.T) {
 	require.Equal(t, "", missing.Href)
 }
 
+func TestResource_FilterLinks(t *testing.T) {
+
+	resource := NewResource("acct:sarah@sky.net").
+		Link(RelationTypeAvatar, "img/webp", "https://sara.sky.net/profile.webp").
+		Link(RelationTypeProfile, "text/html", "https://sara.sky.net/profile").
+		Link(RelationTypeSelf, "application/activity+json", "https://sara.sky.net/activity.json")
+
+	require.Equal(t, 3, len(resource.Links))
+
+	// FilterLinks with empty string is a no-op.
+	resource.FilterLinks("")
+	require.Equal(t, 3, len(resource.Links))
+
+	// FilterLinks returns all matching values.
+	resource.FilterLinks(RelationTypeAvatar)
+
+	require.Equal(t, 1, len(resource.Links))
+	require.Equal(t, RelationTypeAvatar, resource.Links[0].RelationType)
+	require.Equal(t, "img/webp", resource.Links[0].MediaType)
+	require.Equal(t, "https://sara.sky.net/profile.webp", resource.Links[0].Href)
+
+}
+
+func TestResource_FilterLinks_NonMatching(t *testing.T) {
+
+	resource := NewResource("acct:sarah@sky.net").
+		Link(RelationTypeAvatar, "img/webp", "https://sara.sky.net/profile.webp").
+		Link(RelationTypeProfile, "text/html", "https://sara.sky.net/profile").
+		Link(RelationTypeSelf, "application/activity+json", "https://sara.sky.net/activity.json")
+
+	// FilterLinks with non-matching value returns an empty list
+	resource.FilterLinks("Non-Matching-Value")
+	require.Equal(t, 0, len(resource.Links))
+}
+
 func ExampleResource() {
 
 	// Create and populate the resource object.
