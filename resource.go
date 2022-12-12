@@ -63,7 +63,7 @@ func (resource *Resource) FilterLinks(relationType string) {
 		return
 	}
 
-	filteredLinks := make([]Link, len(resource.Links))
+	filteredLinks := make([]Link, 0, len(resource.Links))
 
 	for _, link := range resource.Links {
 		if link.RelationType == relationType {
