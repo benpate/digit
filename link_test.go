@@ -42,6 +42,42 @@ func TestLink(t *testing.T) {
 	require.Equal(t, "", link.Properties["Author"])
 }
 
+func TestLinkProperties(t *testing.T) {
+
+	link := NewLink("example", "text/plain", "http://example.com")
+
+	// Test Getters/Setters
+	require.False(t, link.IsEmpty())
+	require.True(t, link.SetString("rel", "new-relationship"))
+	require.True(t, link.SetString("type", "new-type"))
+	require.True(t, link.SetString("href", "new-href"))
+	require.False(t, link.SetString("unknown", "new-unknown"))
+
+	require.Equal(t, "new-relationship", link.GetString("rel"))
+	require.Equal(t, "new-type", link.GetString("type"))
+	require.Equal(t, "new-href", link.GetString("href"))
+	require.Equal(t, "", link.GetString("unknown"))
+
+	// Test GetChildren
+	titles, ok := link.GetChild("titles")
+	require.True(t, ok)
+	require.Equal(t, make(MapOfString), titles)
+
+	properties, ok := link.GetChild("properties")
+	require.True(t, ok)
+	require.Equal(t, make(MapOfString), properties)
+
+	unknown, ok := link.GetChild("unknown")
+	require.False(t, ok)
+	require.Nil(t, unknown)
+
+	// Test empty link
+	require.True(t, link.SetString("rel", ""))
+	require.True(t, link.SetString("type", ""))
+	require.True(t, link.SetString("href", ""))
+	require.True(t, link.IsEmpty())
+}
+
 func ExampleLink() {
 
 	// Create a new link with a link relation, mime-type, and href
