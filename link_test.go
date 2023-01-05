@@ -78,6 +78,12 @@ func TestLinkProperties(t *testing.T) {
 	require.True(t, link.IsEmpty())
 }
 
+func TestMatches(t *testing.T) {
+	require.True(t, NewLink("example", "text/plain", "http://example.com").MatchesType(NewLink("example", "text/plain", "http://new.example.com")))
+	require.False(t, NewLink("not-example", "text/plain", "http://example.com").MatchesType(NewLink("example", "text/plain", "http://new.example.com")))
+	require.False(t, NewLink("example", "not/text/plain", "http://example.com").MatchesType(NewLink("example", "text/plain", "http://new.example.com")))
+}
+
 func ExampleLink() {
 
 	// Create a new link with a link relation, mime-type, and href
