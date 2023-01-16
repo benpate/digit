@@ -57,8 +57,8 @@ func (link Link) Property(name string, value string) Link {
 	return link
 }
 
-// MatchesType returns TRUE if the "otherLink" has the same type and rel as this link
-func (link Link) MatchesType(otherLink Link) bool {
+// Matches returns TRUE if the "otherLink" has the same type and rel as this link
+func (link Link) Matches(otherLink Link) bool {
 	return (link.MediaType == otherLink.MediaType) && (link.RelationType == otherLink.RelationType)
 }
 
