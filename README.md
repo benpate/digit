@@ -1,7 +1,7 @@
 # digit 👉
 
 [![GoDoc](https://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](http://pkg.go.dev/github.com/benpate/digit)
-[![Build Status](https://img.shields.io/github/workflow/status/benpate/digit/Go/main)](https://github.com/benpate/digit/actions/workflows/go.yml)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/benpate/digit/go.yml?branch=main)](https://github.com/benpate/digit/actions/workflows/go.yml)
 [![Codecov](https://img.shields.io/codecov/c/github/benpate/digit.svg?style=flat-square)](https://codecov.io/gh/benpate/digit)
 [![Go Report Card](https://goreportcard.com/badge/github.com/benpate/digit?style=flat-square)](https://goreportcard.com/report/github.com/benpate/digit)
 [![Version](https://img.shields.io/github/v/release/benpate/digit?include_prereleases&style=flat-square&color=brightgreen)](https://github.com/benpate/digit/releases)
