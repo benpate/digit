@@ -1,12 +1,14 @@
 package digit
 
+import "github.com/benpate/rosetta/mapof"
+
 // Link represents a link, or relationship, to another resource on the Internet.
 type Link struct {
-	RelationType string      `json:"rel"`                  // Either a URI or a registered relation type (RFC5988)
-	MediaType    string      `json:"type,omitempty"`       // Media Type of the target resource (RFC 3986)
-	Href         string      `json:"href,omitempty"`       // URI of the target resource
-	Titles       MapOfString `json:"titles,omitempty"`     // Map keys are either language tag (or the string "und"), values are the title of this object in that language.  If the language is unknown or unspecified, then the name is "und".
-	Properties   MapOfString `json:"properties,omitempty"` // Zero or more name/value pairs whose names are URIs and whose values are strings.  properties are used to convey additional information about the link relationship.
+	RelationType string       `json:"rel"`                  // Either a URI or a registered relation type (RFC5988)
+	MediaType    string       `json:"type,omitempty"`       // Media Type of the target resource (RFC 3986)
+	Href         string       `json:"href,omitempty"`       // URI of the target resource
+	Titles       mapof.String `json:"titles,omitempty"`     // Map keys are either language tag (or the string "und"), values are the title of this object in that language.  If the language is unknown or unspecified, then the name is "und".
+	Properties   mapof.String `json:"properties,omitempty"` // Zero or more name/value pairs whose names are URIs and whose values are strings.  properties are used to convey additional information about the link relationship.
 }
 
 // NewLink returns a fully initialized Link object.
@@ -15,8 +17,8 @@ func NewLink(relationType string, mediaType string, href string) Link {
 		RelationType: relationType,
 		MediaType:    mediaType,
 		Href:         href,
-		Titles:       make(MapOfString, 0),
-		Properties:   make(MapOfString, 0),
+		Titles:       mapof.NewString(),
+		Properties:   mapof.NewString(),
 	}
 	return result
 }
@@ -63,15 +65,20 @@ func (link Link) Matches(otherLink Link) bool {
 }
 
 func (link Link) GetString(name string) string {
+	result, _ := link.GetStringOK(name)
+	return result
+}
+
+func (link Link) GetStringOK(name string) (string, bool) {
 	switch name {
 	case "rel":
-		return link.RelationType
+		return link.RelationType, true
 	case "type":
-		return link.MediaType
+		return link.MediaType, true
 	case "href":
-		return link.Href
+		return link.Href, true
 	default:
-		return ""
+		return "", false
 	}
 }
 
@@ -94,13 +101,13 @@ func (link *Link) SetString(name string, value string) bool {
 	}
 }
 
-func (link *Link) GetChild(name string) (interface{}, bool) {
+func (link *Link) GetObject(name string) (interface{}, bool) {
 	switch name {
 	case "titles":
-		return link.Titles, true
+		return &link.Titles, true
 
 	case "properties":
-		return link.Properties, true
+		return &link.Properties, true
 
 	default:
 		return nil, false

@@ -3,6 +3,7 @@ package digit
 import (
 	"testing"
 
+	"github.com/benpate/rosetta/mapof"
 	"github.com/stretchr/testify/require"
 )
 
@@ -59,15 +60,15 @@ func TestLinkProperties(t *testing.T) {
 	require.Equal(t, "", link.GetString("unknown"))
 
 	// Test GetChildren
-	titles, ok := link.GetChild("titles")
+	titles, ok := link.GetObject("titles")
 	require.True(t, ok)
-	require.Equal(t, make(MapOfString), titles)
+	require.Equal(t, &mapof.String{}, titles)
 
-	properties, ok := link.GetChild("properties")
+	properties, ok := link.GetObject("properties")
 	require.True(t, ok)
-	require.Equal(t, make(MapOfString), properties)
+	require.Equal(t, &mapof.String{}, properties)
 
-	unknown, ok := link.GetChild("unknown")
+	unknown, ok := link.GetObject("unknown")
 	require.False(t, ok)
 	require.Nil(t, unknown)
 

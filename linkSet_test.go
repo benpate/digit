@@ -55,6 +55,17 @@ func TestLinkSet(t *testing.T) {
 		require.True(t, link.IsEmpty())
 	}
 
-	set.RemoveBy("rel", "friend")
+	require.Equal(t, 3, len(set))
+
+	set.Remove(Link{RelationType: "sibling", MediaType: "text/markdown", Href: "http://example.com/sibling"})
 	require.Equal(t, 2, len(set))
+
+	set.Remove(Link{RelationType: "parent", MediaType: "application/json", Href: "http://example.com/parent"})
+	require.Equal(t, 1, len(set))
+
+	set.RemoveBy("rel", "friend")
+	require.Zero(t, len(set))
+
+	set.RemoveBy("rel", "missing")
+	require.Zero(t, len(set))
 }
