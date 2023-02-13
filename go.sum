@@ -2,8 +2,8 @@ github.com/aymerick/douceur v0.2.0 h1:Mv+mAeH1Q+n9Fr+oyamOlAkUNPWPlA8PPGR0QAaYuP
 github.com/aymerick/douceur v0.2.0/go.mod h1:wlT5vV2O3h55X9m7iVYN0TBM0NH/MmbLnd30/FjWUq4=
 github.com/benpate/derp v0.27.0 h1:qjKlTC2gv5MtqFgz2vSGWoz2WyMNT6i2ALyIyBJ7s6Q=
 github.com/benpate/derp v0.27.0/go.mod h1:Qrtco2SAercNzKqb6WsaXvxn1E+/4DHBaWB+BwehJAo=
-github.com/benpate/remote v0.10.0 h1:YrK+OowbHHVEF9NGQTTAx3XK9ZN8EvcwA5p+sViOrRY=
-github.com/benpate/remote v0.10.0/go.mod h1:+EIbMo6207fEfjHvvEWMEC0Q50zXBozS20muUv7UiTM=
+github.com/benpate/remote v0.10.1 h1:S6Wd4k+oLmYfqt8vf7L3Vxm2tWYQHmXr+equjaxk178=
+github.com/benpate/remote v0.10.1/go.mod h1:+EIbMo6207fEfjHvvEWMEC0Q50zXBozS20muUv7UiTM=
 github.com/benpate/rosetta v0.11.1 h1:XCC7TqQwTxGY0IeVmzMJTm4F/iKvXxZnn38S9mdPGUI=
 github.com/benpate/rosetta v0.11.1/go.mod h1:OQPkr/pkQ0lTehXAhG7tKNeYp4ovxdi7uvXzxPUbxUY=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
