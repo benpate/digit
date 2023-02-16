@@ -24,7 +24,7 @@ func (set LinkSet) Find(link Link) Link {
 }
 
 // Apply searches for the first link that matches (with identical "rel" and "type"
-// properties) the given link. If found, then the first matching item is updates.
+// properties) the given link. If found, then the first matching item is updated.
 // If not, then a new link is inserted
 func (set *LinkSet) Apply(link Link) {
 	for index, target := range *set {
