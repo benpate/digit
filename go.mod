@@ -5,8 +5,8 @@ go 1.18
 require (
 	github.com/benpate/derp v0.27.0
 	github.com/benpate/remote v0.10.1
-	github.com/benpate/rosetta v0.11.2
-	github.com/stretchr/testify v1.8.1
+	github.com/benpate/rosetta v0.12.0
+	github.com/stretchr/testify v1.8.2
 )
 
 require (
@@ -17,6 +17,6 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.22 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
-	golang.org/x/net v0.5.0 // indirect
+	golang.org/x/net v0.8.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
