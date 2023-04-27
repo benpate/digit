@@ -57,4 +57,19 @@ func TestParseURL_WeirdStuff(t *testing.T) {
 	webFinger, err = ParseUsername("john+connor@connor.com")
 	require.Nil(t, err)
 	require.Equal(t, "https://connor.com/.well-known/webfinger?resource=acct:john+connor@connor.com", webFinger)
+
+	// Test Local Address without a protocol
+	webFinger, err = ParseUsername("localhost/john")
+	require.Nil(t, err)
+	require.Equal(t, "http://localhost/.well-known/webfinger?resource=http://localhost/john", webFinger)
+
+	// Test Remote Address without a protocol
+	webFinger, err = ParseUsername("sky.net/sarah")
+	require.Nil(t, err)
+	require.Equal(t, "https://sky.net/.well-known/webfinger?resource=https://sky.net/sarah", webFinger)
+
+	// Test Remote Address without a protocol and an "@"
+	webFinger, err = ParseUsername("sky.net/@sarah")
+	require.Nil(t, err)
+	require.Equal(t, "https://sky.net/.well-known/webfinger?resource=https://sky.net/@sarah", webFinger)
 }

@@ -15,34 +15,7 @@ func ParseUsername(username string) (string, error) {
 
 	// If the username LOOKS like a URL, then try to parse it like a URL
 	if strings.HasPrefix(username, "http://") || strings.HasPrefix(username, "https://") {
-		urlValue, err := url.Parse(username)
-
-		if err != nil {
-			//lint:ignore ST1005 This is likely a user-facing error message
-			return "", errors.New("URL must be formatted correctly.")
-		}
-
-		if urlValue.Host == "" {
-			//lint:ignore ST1005 This is likely a user-facing error message
-			return "", errors.New("URL must be formatted correctly.")
-		}
-
-		// Build a username that looks like username@domain.com
-		parsed := urlValue.Path
-		parsed = strings.TrimPrefix(parsed, "/")
-		parsed = strings.TrimSuffix(parsed, "/")
-		parsed = parsed + "@" + urlValue.Host
-
-		if strings.HasPrefix(parsed, "@") {
-			parsed = strings.TrimPrefix(parsed, "@")
-			urlValue.Path = ".well-known/webfinger"
-			urlValue.RawQuery = "resource=acct:" + parsed
-		} else {
-			urlValue.Path = ".well-known/webfinger"
-			urlValue.RawQuery = "resource=" + username
-		}
-
-		return urlValue.String(), nil
+		return parseUsernameURL(username)
 	}
 
 	// Otherwise, try to parse it like an Email Address
@@ -74,8 +47,45 @@ func ParseUsername(username string) (string, error) {
 
 	}
 
+	// Last Ditch, try to parse it as a URL without a protocol
+	if result, err := parseUsernameURL(domain.AddProtocol(username)); err == nil {
+		return result, nil
+	}
+
 	// Otherwise, we don't recognize this format.
 
 	//lint:ignore ST1005 This is likely a user-facing error message
 	return "", errors.New("Username must be a valid URL or Email Address.")
+}
+
+func parseUsernameURL(username string) (string, error) {
+
+	urlValue, err := url.Parse(username)
+
+	if err != nil {
+		//lint:ignore ST1005 This is likely a user-facing error message
+		return "", errors.New("URL must be formatted correctly.")
+	}
+
+	if urlValue.Host == "" {
+		//lint:ignore ST1005 This is likely a user-facing error message
+		return "", errors.New("URL must be formatted correctly.")
+	}
+
+	// Build a username that looks like username@domain.com
+	parsed := urlValue.Path
+	parsed = strings.TrimPrefix(parsed, "/")
+	parsed = strings.TrimSuffix(parsed, "/")
+	parsed = parsed + "@" + urlValue.Host
+
+	if strings.HasPrefix(parsed, "@") {
+		parsed = strings.TrimPrefix(parsed, "@")
+		urlValue.Path = ".well-known/webfinger"
+		urlValue.RawQuery = "resource=acct:" + parsed
+	} else {
+		urlValue.Path = ".well-known/webfinger"
+		urlValue.RawQuery = "resource=" + username
+	}
+
+	return urlValue.String(), nil
 }

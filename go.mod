@@ -1,6 +1,8 @@
 module github.com/benpate/digit
 
-go 1.18
+go 1.19
+
+replace github.com/benpate/domain => ../domain
 
 require (
 	github.com/benpate/derp v0.27.1
