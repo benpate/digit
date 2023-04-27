@@ -6,10 +6,32 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/benpate/digit?style=flat-square)](https://goreportcard.com/report/github.com/benpate/digit)
 [![Version](https://img.shields.io/github/v/release/benpate/digit?include_prereleases&style=flat-square&color=brightgreen)](https://github.com/benpate/digit/releases)
 
-This is an experimental library that implements the WebFinger protocol.  It includes type definitions for WebFinger data structures, along with some utilities for sending and receiving WebFinger requests
+This library implements the WebFinger protocol.  It includes type definitions for WebFinger data structures, along with some utilities for sending and receiving WebFinger requests
 
-Digit is performing well in [Emissary](https://github.com/EmissarySocial/emissary) without any problems, but it is still new enough that you should still treat it with caution.
 
+## Generating WebFinger Data
+
+Digit provides data types with a simple, chainable API for creating new resources.
+
+``` go
+resource := digit.NewResource("acct:sarah@sky.net").
+	Alias("http://sky.net/sarah").
+	Alias("http://other.website.com/sarah-connor").
+	Property("http://sky.net/ns/role", "employee").
+	Link(RelationTypeProfile, "text/html", "https://sky.net/sarah")
+
+result, err := json.Marshal(resource)
+```
+
+## Retrieving WebFinger Data
+
+Digit can look up WebFinger metadata using a variety of identifiers
+
+``` go
+resource, err := digit.Lookup("sarah@sky.net") // Email construction
+resource, err := digit.Lookup("sarah@sky.net") // Fediverse "@username" construction
+resource, err := digit.Lookup("http://sky.net/sarah") // Canonical URL construction
+```
 
 ## WebFinger Resources
 
@@ -18,4 +40,4 @@ Digit is performing well in [Emissary](https://github.com/EmissarySocial/emissar
 
 ## Pull Requests Welcome
 
-This library is a work in progress, and will benefit from your experience reports, use cases, and contributions.  If you have an idea for making this library better, send in a pull request.  We're all in this together! 👉
+Digit is relatively stable and is performing well in [Emissary](https://github.com/EmissarySocial/emissary).  However, it is still a work in progress, and will benefit from your experience reports, use cases, and contributions.  If you have an idea for making this library better, send in a pull request.  We're all in this together! 👉
