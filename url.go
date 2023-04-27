@@ -44,7 +44,6 @@ func ParseUsername(username string) (string, error) {
 		}
 
 		return urlValue.String(), nil
-
 	}
 
 	// Last Ditch, try to parse it as a URL without a protocol
@@ -72,20 +71,8 @@ func parseUsernameURL(username string) (string, error) {
 		return "", errors.New("URL must be formatted correctly.")
 	}
 
-	// Build a username that looks like username@domain.com
-	parsed := urlValue.Path
-	parsed = strings.TrimPrefix(parsed, "/")
-	parsed = strings.TrimSuffix(parsed, "/")
-	parsed = parsed + "@" + urlValue.Host
-
-	if strings.HasPrefix(parsed, "@") {
-		parsed = strings.TrimPrefix(parsed, "@")
-		urlValue.Path = ".well-known/webfinger"
-		urlValue.RawQuery = "resource=acct:" + parsed
-	} else {
-		urlValue.Path = ".well-known/webfinger"
-		urlValue.RawQuery = "resource=" + username
-	}
+	urlValue.Path = ".well-known/webfinger"
+	urlValue.RawQuery = "resource=" + username
 
 	return urlValue.String(), nil
 }

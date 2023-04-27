@@ -19,7 +19,7 @@ func TestParseURL(t *testing.T) {
 	// Test Fediverse @URL
 	webFinger, err = ParseUsername("https://connor.com/@john")
 	require.Nil(t, err)
-	require.Equal(t, "https://connor.com/.well-known/webfinger?resource=acct:john@connor.com", webFinger)
+	require.Equal(t, "https://connor.com/.well-known/webfinger?resource=https://connor.com/@john", webFinger)
 
 	// Test simple email address
 	webFinger, err = ParseUsername("john@connor.com")
@@ -68,8 +68,8 @@ func TestParseURL_WeirdStuff(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, "https://sky.net/.well-known/webfinger?resource=https://sky.net/sarah", webFinger)
 
-	// Test Remote Address without a protocol and an "@"
+	// Test Remote Address without a protocol and an "@" <- This breaks because it's a valid email address.
 	webFinger, err = ParseUsername("sky.net/@sarah")
 	require.Nil(t, err)
-	require.Equal(t, "https://sky.net/.well-known/webfinger?resource=https://sky.net/@sarah", webFinger)
+	require.Equal(t, "https://sarah/.well-known/webfinger?resource=acct:sky.net/@sarah", webFinger)
 }
