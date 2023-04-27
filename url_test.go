@@ -31,6 +31,11 @@ func TestParseURL(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, "https://sky.net/.well-known/webfinger?resource=acct:sarah@sky.net", webFinger)
 
+	// Test Localhost addresses
+	webFinger, err = ParseUsername("http://localhost/john")
+	require.Nil(t, err)
+	require.Equal(t, "http://localhost/.well-known/webfinger?resource=http://localhost/john", webFinger)
+
 }
 
 func TestParseURL_WeirdStuff(t *testing.T) {

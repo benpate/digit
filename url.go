@@ -5,6 +5,8 @@ import (
 	"net/mail"
 	"net/url"
 	"strings"
+
+	"github.com/benpate/domain"
 )
 
 // GetWebFingerServer returns the default WebFinger server for a given username.
@@ -55,13 +57,17 @@ func ParseUsername(username string) (string, error) {
 		// TODO: At some point we may want a more robust way of parsing the email address.
 		// Check out http://emailregex.com/
 		index := strings.LastIndex(emailValue.Address, `@`)
-		domain := emailValue.Address[index+1:]
+		hostname := emailValue.Address[index+1:]
 
 		urlValue := url.URL{
 			Scheme:   "https",
-			Host:     domain,
+			Host:     hostname,
 			Path:     ".well-known/webfinger",
 			RawQuery: "resource=acct:" + emailValue.Address,
+		}
+
+		if domain.IsLocalhost(hostname) {
+			urlValue.Scheme = "http"
 		}
 
 		return urlValue.String(), nil
