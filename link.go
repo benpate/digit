@@ -101,7 +101,7 @@ func (link *Link) SetString(name string, value string) bool {
 	}
 }
 
-func (link *Link) GetObject(name string) (interface{}, bool) {
+func (link *Link) GetPointer(name string) (interface{}, bool) {
 	switch name {
 	case "titles":
 		return &link.Titles, true

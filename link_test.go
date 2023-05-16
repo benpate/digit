@@ -60,15 +60,15 @@ func TestLinkProperties(t *testing.T) {
 	require.Equal(t, "", link.GetString("unknown"))
 
 	// Test GetChildren
-	titles, ok := link.GetObject("titles")
+	titles, ok := link.GetPointer("titles")
 	require.True(t, ok)
 	require.Equal(t, &mapof.String{}, titles)
 
-	properties, ok := link.GetObject("properties")
+	properties, ok := link.GetPointer("properties")
 	require.True(t, ok)
 	require.Equal(t, &mapof.String{}, properties)
 
-	unknown, ok := link.GetObject("unknown")
+	unknown, ok := link.GetPointer("unknown")
 	require.False(t, ok)
 	require.Nil(t, unknown)
 
