@@ -5,8 +5,8 @@ go 1.19
 require (
 	github.com/benpate/derp v0.27.2
 	github.com/benpate/domain v0.0.4
-	github.com/benpate/remote v0.10.4
-	github.com/benpate/rosetta v0.16.0
+	github.com/benpate/remote v0.10.6
+	github.com/benpate/rosetta v0.17.0
 	github.com/stretchr/testify v1.8.4
 )
 
