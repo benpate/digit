@@ -27,6 +27,10 @@ func (link Link) IsEmpty() bool {
 	return link.RelationType == "" && link.MediaType == "" && link.Href == ""
 }
 
+func (link Link) NotEmpty() bool {
+	return !link.IsEmpty()
+}
+
 // Title populates a title value for the Link.
 func (link Link) Title(title string, language string) Link {
 
