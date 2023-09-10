@@ -1,13 +1,13 @@
 # digit 👉
 
 [![GoDoc](https://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](http://pkg.go.dev/github.com/benpate/digit)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/benpate/digit/go.yml?branch=main)](https://github.com/benpate/digit/actions/workflows/go.yml)
-[![Codecov](https://img.shields.io/codecov/c/github/benpate/digit.svg?style=flat-square)](https://codecov.io/gh/benpate/digit)
-[![Go Report Card](https://goreportcard.com/badge/github.com/benpate/digit?style=flat-square)](https://goreportcard.com/report/github.com/benpate/digit)
 [![Version](https://img.shields.io/github/v/release/benpate/digit?include_prereleases&style=flat-square&color=brightgreen)](https://github.com/benpate/digit/releases)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/benpate/digit/go.yml?style=flat-square)](https://github.com/benpate/digit/actions/workflows/go.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/benpate/digit?style=flat-square)](https://goreportcard.com/report/github.com/benpate/digit)
+[![Codecov](https://img.shields.io/codecov/c/github/benpate/digit.svg?style=flat-square)](https://codecov.io/gh/benpate/digit)
 
-This library implements the WebFinger protocol.  It includes type definitions for WebFinger data structures, along with some utilities for sending and receiving WebFinger requests
-
+## WebFinger for Go
+Digit implements the WebFinger protocol.  It includes type definitions for WebFinger data structures, along with some utilities for sending and receiving WebFinger requests
 
 ## Generating WebFinger Data
 
