@@ -2,9 +2,11 @@ module github.com/benpate/digit
 
 go 1.19
 
+replace github.com/benpate/remote => ../remote
+
 require (
 	github.com/benpate/derp v0.28.1
-	github.com/benpate/domain v0.1.0
+	github.com/benpate/domain v0.2.0
 	github.com/benpate/remote v0.11.1
 	github.com/benpate/rosetta v0.18.1
 	github.com/stretchr/testify v1.8.4

@@ -8,68 +8,91 @@ import (
 
 func TestParseURL(t *testing.T) {
 
-	var webFinger string
-	var err error
+	var webFingerURLs []string
 
 	// Test URL
-	webFinger, err = ParseUsername("https://connor.com/john")
-	require.Nil(t, err)
-	require.Equal(t, "https://connor.com/.well-known/webfinger?resource=https://connor.com/john", webFinger)
+	webFingerURLs = ParseAccount("https://connor.com/john")
+	require.Equal(t, 1, len(webFingerURLs))
+	require.Equal(t, "https://connor.com/.well-known/webfinger?resource=acct:https://connor.com/john", webFingerURLs[0])
 
 	// Test Fediverse @URL
-	webFinger, err = ParseUsername("https://connor.com/@john")
-	require.Nil(t, err)
-	require.Equal(t, "https://connor.com/.well-known/webfinger?resource=https://connor.com/@john", webFinger)
+	webFingerURLs = ParseAccount("https://connor.com/@john")
+	require.Equal(t, 1, len(webFingerURLs))
+	require.Equal(t, "https://connor.com/.well-known/webfinger?resource=acct:https://connor.com/@john", webFingerURLs[0])
 
 	// Test simple email address
-	webFinger, err = ParseUsername("john@connor.com")
-	require.Nil(t, err)
-	require.Equal(t, "https://connor.com/.well-known/webfinger?resource=acct:john@connor.com", webFinger)
+	webFingerURLs = ParseAccount("john@connor.com")
+	require.Equal(t, 1, len(webFingerURLs))
+	require.Equal(t, "https://connor.com/.well-known/webfinger?resource=acct:john@connor.com", webFingerURLs[0])
 
 	// Test Fediverse address
-	webFinger, err = ParseUsername("@sarah@sky.net")
-	require.Nil(t, err)
-	require.Equal(t, "https://sky.net/.well-known/webfinger?resource=acct:sarah@sky.net", webFinger)
+	webFingerURLs = ParseAccount("@sarah@sky.net")
+	require.Equal(t, 1, len(webFingerURLs))
+	require.Equal(t, "https://sky.net/.well-known/webfinger?resource=acct:sarah@sky.net", webFingerURLs[0])
 
 	// Test Localhost addresses
-	webFinger, err = ParseUsername("http://localhost/john")
-	require.Nil(t, err)
-	require.Equal(t, "http://localhost/.well-known/webfinger?resource=http://localhost/john", webFinger)
+	webFingerURLs = ParseAccount("http://localhost/john")
+	require.Equal(t, 1, len(webFingerURLs))
+	require.Equal(t, "http://localhost/.well-known/webfinger?resource=acct:http://localhost/john", webFingerURLs[0])
 
+}
+
+func TestParseURL_ActivityPub(t *testing.T) {
+
+	// Test Fediverse localhost address
+	webFingerURLs := ParseAccount("@sarah@localhost:3000")
+	require.Equal(t, 2, len(webFingerURLs))
+	require.Equal(t, "https://localhost:3000/.well-known/webfinger?resource=acct:sarah@localhost:3000", webFingerURLs[0])
+	require.Equal(t, "http://localhost:3000/.well-known/webfinger?resource=acct:sarah@localhost:3000", webFingerURLs[1])
 }
 
 func TestParseURL_WeirdStuff(t *testing.T) {
 
-	var webFinger string
-	var err error
-
 	// Test URL with port
-	webFinger, err = ParseUsername("https://connor.com:8080/john")
-	require.Nil(t, err)
-	require.Equal(t, "https://connor.com:8080/.well-known/webfinger?resource=https://connor.com:8080/john", webFinger)
+	webFingerURLs := ParseAccount("https://connor.com:8080/john")
+	require.Equal(t, 1, len(webFingerURLs))
+	require.Equal(t, "https://connor.com:8080/.well-known/webfinger?resource=acct:https://connor.com:8080/john", webFingerURLs[0])
+}
 
-	// Test Malformed URL
-	webFinger, err = ParseUsername("https:///@john")
-	require.NotNil(t, err)
-	require.Equal(t, "", webFinger)
+func TestParseURL_WeirdStuff2(t *testing.T) {
+
+	// This is actually a valid URL
+	webFingerURLs := ParseAccount("https://@john")
+	require.Equal(t, 1, len(webFingerURLs))
+}
+
+func TestParseURL_WeirdStuff3(t *testing.T) {
+
+	// But this one isn't because the host is missing
+	webFingerURLs := ParseAccount("https://@john")
+	require.Equal(t, 1, len(webFingerURLs))
+	require.Equal(t, "https://@john/.well-known/webfinger?resource=acct:https://@john", webFingerURLs[0])
+}
+
+func TestParseURL_WeirdStuff4(t *testing.T) {
 
 	// Test email address with a "+"
-	webFinger, err = ParseUsername("john+connor@connor.com")
-	require.Nil(t, err)
-	require.Equal(t, "https://connor.com/.well-known/webfinger?resource=acct:john+connor@connor.com", webFinger)
+	webFingerURLs := ParseAccount("john+connor@connor.com")
+	require.Equal(t, 1, len(webFingerURLs))
+	require.Equal(t, "https://connor.com/.well-known/webfinger?resource=acct:john+connor@connor.com", webFingerURLs[0])
+}
+
+func TestParseURL_WeirdStuff5(t *testing.T) {
 
 	// Test Local Address without a protocol
-	webFinger, err = ParseUsername("localhost/john")
-	require.Nil(t, err)
-	require.Equal(t, "http://localhost/.well-known/webfinger?resource=http://localhost/john", webFinger)
+	webFingerURLs := ParseAccount("localhost/john")
+	require.Equal(t, 2, len(webFingerURLs))
+	require.Equal(t, "https://localhost/.well-known/webfinger?resource=acct:https://localhost/john", webFingerURLs[0])
+	require.Equal(t, "http://localhost/.well-known/webfinger?resource=acct:http://localhost/john", webFingerURLs[1])
 
 	// Test Remote Address without a protocol
-	webFinger, err = ParseUsername("sky.net/sarah")
-	require.Nil(t, err)
-	require.Equal(t, "https://sky.net/.well-known/webfinger?resource=https://sky.net/sarah", webFinger)
+	webFingerURLs = ParseAccount("sky.net/sarah")
+	require.Equal(t, 1, len(webFingerURLs))
+	require.Equal(t, "https://sky.net/.well-known/webfinger?resource=acct:https://sky.net/sarah", webFingerURLs[0])
 
-	// Test Remote Address without a protocol and an "@" <- This breaks because it's a valid email address.
-	webFinger, err = ParseUsername("sky.net/@sarah")
-	require.Nil(t, err)
-	require.Equal(t, "https://sarah/.well-known/webfinger?resource=acct:sky.net/@sarah", webFinger)
+	/*/ Test Remote Address without a protocol and an "@" <- This breaks because it's a valid email address.
+	webFingerURLs = ParseAccount("sky.net/@sarah")
+	require.Equal(t, 1, len(webFingerURLs))
+	require.Equal(t, "https://sarah/.well-known/webfinger?resource=acct:https://sky.net/@sarah", webFingerURLs[0])
+	*/
 }

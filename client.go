@@ -5,19 +5,21 @@ import (
 	"github.com/benpate/remote"
 )
 
-func Lookup(url string) (Resource, error) {
+func Lookup(url string, options ...remote.Option) (Resource, error) {
 
-	webFingerServerURL, err := ParseUsername(url)
-
-	if err != nil {
-		return NewResource(url), derp.Wrap(err, "digit.Lookup", "Unable to parse resource url", url)
-	}
-
+	webFingerServerURLs := ParseAccount(url)
 	result := NewResource(url)
 
-	if err := remote.Get(webFingerServerURL).Response(&result, nil).Send(); err != nil {
-		return result, derp.Wrap(err, "digit.Lookup", "Error connecting to WebFinger server", webFingerServerURL)
+	for _, webFingerServerURL := range webFingerServerURLs {
+
+		txn := remote.Get(webFingerServerURL).
+			WithOptions(options...).
+			Result(&result)
+
+		if err := txn.Send(); err == nil {
+			return result, nil
+		}
 	}
 
-	return result, nil
+	return result, derp.NewInternalError("digit.Lookup", "Unable to load resource", url, webFingerServerURLs)
 }

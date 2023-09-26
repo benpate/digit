@@ -1,78 +1,115 @@
 package digit
 
 import (
-	"errors"
-	"net/mail"
 	"net/url"
 	"strings"
 
 	"github.com/benpate/domain"
+	"github.com/benpate/rosetta/list"
 )
 
-// GetWebFingerServer returns the default WebFinger server for a given username.
-// It works with email addresses (username@server.com) as well as URLs (https://server.com/username)
-func ParseUsername(username string) (string, error) {
+// ParseAccount returns a slice of potential WebFinger URLs for a given username.
+// If the hostname is a localhost URL, then both HTTP and HTTPS versions are returned.
+// Otherwise, only HTTPS endpoints are returned.
+func ParseAccount(account string) []string {
 
-	// If the username LOOKS like a URL, then try to parse it like a URL
-	if strings.HasPrefix(username, "http://") || strings.HasPrefix(username, "https://") {
-		return parseUsernameURL(username)
-	}
-
-	// Otherwise, try to parse it like an Email Address
-
-	// In case we've received the Fediverse "@username@server.com" format,
-	// remove the leading "@" before parsing like an email
-	parsed := strings.TrimPrefix(username, "@")
-
-	// Try to parse the username like an email
-	if emailValue, err := mail.ParseAddress(parsed); err == nil {
-
-		// TODO: At some point we may want a more robust way of parsing the email address.
-		// Check out http://emailregex.com/
-		index := strings.LastIndex(emailValue.Address, `@`)
-		hostname := emailValue.Address[index+1:]
-
-		urlValue := url.URL{
-			Scheme:   "https",
-			Host:     hostname,
-			Path:     ".well-known/webfinger",
-			RawQuery: "resource=acct:" + emailValue.Address,
+	// If the account already has an HTTP prefix, then craft a WebFinger URL directly for that.
+	if strings.HasPrefix(account, "http://") {
+		if webFingerURL := parseAccount_ResourceURL(account); webFingerURL != "" {
+			return []string{webFingerURL}
+		} else {
+			return make([]string, 0)
 		}
+	}
 
-		if domain.IsLocalhost(hostname) {
-			urlValue.Scheme = "http"
+	// If the account already has an HTTPS prefix, then craft a WebFinger URL directly for that.
+	if strings.HasPrefix(account, "https://") {
+		if webFingerURL := parseAccount_ResourceURL(account); webFingerURL != "" {
+			return []string{webFingerURL}
+		} else {
+			return make([]string, 0)
 		}
-
-		return urlValue.String(), nil
 	}
 
-	// Last Ditch, try to parse it as a URL without a protocol
-	if result, err := parseUsernameURL(domain.AddProtocol(username)); err == nil {
-		return result, nil
+	// Otherwise, try to parse it like an Fediverse Address / Email Address
+	if webFingerURLs := parseAccount_AsHandle(account); len(webFingerURLs) > 0 {
+		return webFingerURLs
 	}
 
-	// Otherwise, we don't recognize this format.
+	// Last Ditch, this might just be a regular URL without a PROTOCOL.  Guess the protocol(s) and continue.
+	result := make([]string, 0, 2)
 
-	//lint:ignore ST1005 This is likely a user-facing error message
-	return "", errors.New("Username must be a valid URL or Email Address.")
+	// Always try https://
+	if webFingerURL := parseAccount_ResourceURL("https://" + account); webFingerURL != "" {
+		result = append(result, webFingerURL)
+	}
+
+	// If this is localhost, then try http://
+	if domain.IsLocalhost(account) {
+		if webFingerURL := parseAccount_ResourceURL("http://" + account); webFingerURL != "" {
+			result = append(result, webFingerURL)
+		}
+	}
+
+	// This may be a glorious success, or abject failure. IDK. Deal with it.
+	return result
 }
 
-func parseUsernameURL(username string) (string, error) {
+// parseAccount_AsHandle identifies a username in the form of a Fediverse Handle or Email address
+func parseAccount_AsHandle(account string) []string {
 
-	urlValue, err := url.Parse(username)
+	// Remove the leading "@" from the account name (if it exists)
+	account = strings.TrimPrefix(account, "@")
 
-	if err != nil {
-		//lint:ignore ST1005 This is likely a user-facing error message
-		return "", errors.New("URL must be formatted correctly.")
+	// If the account doesn't LOOK like an email address, then skip this step
+	if !strings.Contains(account, "@") {
+		return make([]string, 0)
 	}
 
-	if urlValue.Host == "" {
-		//lint:ignore ST1005 This is likely a user-facing error message
-		return "", errors.New("URL must be formatted correctly.")
+	// Split into username and hostname
+	username, hostname := list.Split(account, '@')
+
+	// RULE: Username must not be empty
+	if username == "" {
+		return make([]string, 0)
+	}
+
+	// RULE: Strip Port number and see if the hostname is valid.
+	// If not, we've read the account wrong, and it's not a handle
+	if domain.NotValidHostname(hostname) {
+		return make([]string, 0)
+	}
+
+	// Return the URL *without* the protocol (which will be handled later)
+	urlWithoutProtocol := hostname + "/.well-known/webfinger?resource=acct:" + account
+
+	// Always try the HTTPS version first
+	result := []string{"https://" + urlWithoutProtocol}
+
+	// Allow HTTP for localhost (for testing purposes)
+	if domain.IsLocalhost(hostname) {
+		result = append(result, "http://"+urlWithoutProtocol)
+	}
+
+	return result
+}
+
+// parseAccount_AsResourceURL translates a standard URL into a WebFinger
+// account lookup using the standard "well-known" path and query parameters.
+func parseAccount_ResourceURL(resource string) string {
+
+	urlValue, err := url.Parse(resource)
+
+	if err != nil {
+		return ""
+	}
+
+	if domain.NotValidHostname(urlValue.Host) {
+		return ""
 	}
 
 	urlValue.Path = ".well-known/webfinger"
-	urlValue.RawQuery = "resource=" + username
+	urlValue.RawQuery = "resource=acct:" + resource
 
-	return urlValue.String(), nil
+	return urlValue.String()
 }
