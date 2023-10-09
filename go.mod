@@ -2,13 +2,11 @@ module github.com/benpate/digit
 
 go 1.19
 
-replace github.com/benpate/remote => ../remote
-
 require (
 	github.com/benpate/derp v0.28.1
 	github.com/benpate/domain v0.2.0
-	github.com/benpate/remote v0.11.1
-	github.com/benpate/rosetta v0.18.1
+	github.com/benpate/remote v0.12.0
+	github.com/benpate/rosetta v0.18.2
 	github.com/stretchr/testify v1.8.4
 )
 
@@ -19,6 +17,6 @@ require (
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.25 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	golang.org/x/net v0.15.0 // indirect
+	golang.org/x/net v0.16.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
