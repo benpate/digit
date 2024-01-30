@@ -1,12 +1,14 @@
 module github.com/benpate/digit
 
-go 1.19
+go 1.21
+
+toolchain go1.21.6
 
 require (
 	github.com/benpate/derp v0.30.0
 	github.com/benpate/domain v0.2.0
 	github.com/benpate/remote v0.13.1
-	github.com/benpate/rosetta v0.19.2
+	github.com/benpate/rosetta v0.19.4
 	github.com/stretchr/testify v1.8.4
 )
 
