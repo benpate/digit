@@ -37,6 +37,23 @@ func TestParseURL(t *testing.T) {
 
 }
 
+func TestParseURL_Error(t *testing.T) {
+
+	var webFingerURLs []string
+
+	// Test previously failed URL
+	webFingerURLs = ParseAccount("@first-group@127.0.0.1")
+	require.Equal(t, 2, len(webFingerURLs))
+	require.Equal(t, "https://127.0.0.1/.well-known/webfinger?resource=acct:first-group@127.0.0.1", webFingerURLs[0])
+	require.Equal(t, "http://127.0.0.1/.well-known/webfinger?resource=acct:first-group@127.0.0.1", webFingerURLs[1])
+
+	// Test previously failed URL
+	webFingerURLs = ParseAccount("first-group@127.0.0.1")
+	require.Equal(t, 2, len(webFingerURLs))
+	require.Equal(t, "https://127.0.0.1/.well-known/webfinger?resource=acct:first-group@127.0.0.1", webFingerURLs[0])
+	require.Equal(t, "http://127.0.0.1/.well-known/webfinger?resource=acct:first-group@127.0.0.1", webFingerURLs[1])
+}
+
 func TestParseURL_ActivityPub(t *testing.T) {
 
 	// Test Fediverse localhost address
