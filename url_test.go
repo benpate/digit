@@ -3,6 +3,7 @@ package digit
 import (
 	"testing"
 
+	"github.com/benpate/domain"
 	"github.com/stretchr/testify/require"
 )
 
@@ -112,4 +113,9 @@ func TestParseURL_WeirdStuff5(t *testing.T) {
 	require.Equal(t, 1, len(webFingerURLs))
 	require.Equal(t, "https://sarah/.well-known/webfinger?resource=acct:https://sky.net/@sarah", webFingerURLs[0])
 	*/
+}
+
+func TestIsValidhostName(t *testing.T) {
+	require.True(t, domain.IsValidHostname("localhost"))
+	require.True(t, domain.IsValidHostname("127.0.0.1"))
 }

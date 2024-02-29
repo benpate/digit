@@ -1,8 +1,24 @@
+//go:build localonly
+
 package digit
 
-/* THIS NEEDS TO BE BEHING A BUILD FLAG, BUT I'VE FORGOTTEN HOW TO DO THAT
-func TestClient(t *testing.T) {
+import (
+	"testing"
 
-	t.Log(Lookup("http://localhost/@benpate"))
+	"github.com/stretchr/testify/require"
+)
+
+func TestClient(t *testing.T) {
+	resource, err := Lookup("http://localhost/@benpate")
+	require.Nil(t, err)
+	t.Log(resource)
 }
-*/
+
+func TestMitra(t *testing.T) {
+	resource, err := Lookup("@benpate@wizard.casa")
+	require.Nil(t, err)
+	require.Equal(t, "acct:benpate@wizard.casa", resource.Subject)
+
+	self := resource.FindLink("self")
+	require.Equal(t, "https://wizard.casa/users/benpate", self.Href)
+}
