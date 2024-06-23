@@ -13,7 +13,7 @@ func Lookup(url string, options ...remote.Option) (Resource, error) {
 	for _, webFingerServerURL := range webFingerServerURLs {
 
 		txn := remote.Get(webFingerServerURL).
-			WithOptions(options...).
+			With(options...).
 			Result(&result)
 
 		if err := txn.Send(); err == nil {
