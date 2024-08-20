@@ -5,7 +5,6 @@ import (
 
 	"github.com/benpate/derp"
 	"github.com/benpate/rosetta/mapof"
-	"github.com/davecgh/go-spew/spew"
 )
 
 // Link represents a link, or relationship, to another resource on the Internet.
@@ -147,8 +146,6 @@ func (link *Link) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &temp); err != nil {
 		return derp.Wrap(err, "digit.Link.UnmarshalJSON", "Error unmarshalling JSON", string(data))
 	}
-
-	spew.Dump(temp)
 
 	link.RelationType = temp.GetString("rel")
 	link.MediaType = temp.GetString("type")

@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/benpate/rosetta/mapof"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/require"
 )
 
@@ -93,7 +92,6 @@ func TestUnmarshalLinkWithTitles(t *testing.T) {
 
 	err := link.UnmarshalJSON([]byte(linkJSON))
 
-	spew.Dump(link)
 	require.Nil(t, err)
 	require.Equal(t, "example.com", link.Href)
 	require.Equal(t, "example", link.RelationType)
@@ -105,12 +103,10 @@ func TestUnmarshalLinkWithTitles(t *testing.T) {
 func TestUnmarshalLinkWithProperties(t *testing.T) {
 
 	link := Link{}
-	spew.Dump(link)
 	linkJSON := `{"href":"example.com", "rel":"example", "type":"text/plain", "properties":{"one":"ONE", "two":"TWO"}}`
 
 	err := link.UnmarshalJSON([]byte(linkJSON))
 
-	spew.Dump(link)
 	require.Nil(t, err)
 	require.Equal(t, "example.com", link.Href)
 	require.Equal(t, "example", link.RelationType)
@@ -122,12 +118,10 @@ func TestUnmarshalLinkWithProperties(t *testing.T) {
 func TestUnmarshalLinkWithTemplate(t *testing.T) {
 
 	link := Link{}
-	spew.Dump(link)
 	linkJSON := `{"template":"example.com?one={one}", "rel":"example", "type":"text/plain"}`
 
 	err := link.UnmarshalJSON([]byte(linkJSON))
 
-	spew.Dump(link)
 	require.Nil(t, err)
 	require.Equal(t, "example.com?one={one}", link.Href)
 	require.Equal(t, "example", link.RelationType)
