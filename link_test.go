@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/benpate/rosetta/mapof"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/require"
 )
 
@@ -83,6 +84,54 @@ func TestMatches(t *testing.T) {
 	require.True(t, NewLink("example", "text/plain", "http://example.com").Matches(NewLink("example", "text/plain", "http://new.example.com")))
 	require.False(t, NewLink("not-example", "text/plain", "http://example.com").Matches(NewLink("example", "text/plain", "http://new.example.com")))
 	require.False(t, NewLink("example", "not/text/plain", "http://example.com").Matches(NewLink("example", "text/plain", "http://new.example.com")))
+}
+
+func TestUnmarshalLinkWithTitles(t *testing.T) {
+
+	link := Link{}
+	linkJSON := `{"href":"example.com", "rel":"example", "type":"text/plain", "titles":{"und":"Example", "es":"Ejemplo"}}`
+
+	err := link.UnmarshalJSON([]byte(linkJSON))
+
+	spew.Dump(link)
+	require.Nil(t, err)
+	require.Equal(t, "example.com", link.Href)
+	require.Equal(t, "example", link.RelationType)
+	require.Equal(t, "text/plain", link.MediaType)
+	require.Equal(t, "Example", link.Titles["und"])
+	require.Equal(t, "Ejemplo", link.Titles["es"])
+}
+
+func TestUnmarshalLinkWithProperties(t *testing.T) {
+
+	link := Link{}
+	spew.Dump(link)
+	linkJSON := `{"href":"example.com", "rel":"example", "type":"text/plain", "properties":{"one":"ONE", "two":"TWO"}}`
+
+	err := link.UnmarshalJSON([]byte(linkJSON))
+
+	spew.Dump(link)
+	require.Nil(t, err)
+	require.Equal(t, "example.com", link.Href)
+	require.Equal(t, "example", link.RelationType)
+	require.Equal(t, "text/plain", link.MediaType)
+	require.Equal(t, "ONE", link.Properties["one"])
+	require.Equal(t, "TWO", link.Properties["two"])
+}
+
+func TestUnmarshalLinkWithTemplate(t *testing.T) {
+
+	link := Link{}
+	spew.Dump(link)
+	linkJSON := `{"template":"example.com?one={one}", "rel":"example", "type":"text/plain"}`
+
+	err := link.UnmarshalJSON([]byte(linkJSON))
+
+	spew.Dump(link)
+	require.Nil(t, err)
+	require.Equal(t, "example.com?one={one}", link.Href)
+	require.Equal(t, "example", link.RelationType)
+	require.Equal(t, "text/plain", link.MediaType)
 }
 
 func ExampleLink() {

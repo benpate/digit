@@ -1,14 +1,21 @@
 package digit
 
-import "github.com/benpate/rosetta/mapof"
+import (
+	"encoding/json"
+
+	"github.com/benpate/derp"
+	"github.com/benpate/rosetta/mapof"
+	"github.com/davecgh/go-spew/spew"
+)
 
 // Link represents a link, or relationship, to another resource on the Internet.
+// https://datatracker.ietf.org/doc/html/rfc7033#section-4.4.4
 type Link struct {
 	RelationType string       `json:"rel,omitempty"        bson:"rel,omitempty"`        // Either a URI or a registered relation type (RFC5988)
 	MediaType    string       `json:"type,omitempty"       bson:"type,omitempty"`       // Media Type of the target resource (RFC 3986)
 	Href         string       `json:"href,omitempty"       bson:"href,omitempty"`       // URI of the target resource
 	Titles       mapof.String `json:"titles,omitempty"     bson:"titles,omitempty"`     // Map keys are either language tag (or the string "und"), values are the title of this object in that language.  If the language is unknown or unspecified, then the name is "und".
-	Properties   mapof.String `json:"properties,omitempty" bson:"properties,omitempty"` // Zero or more name/value pairs whose names are URIs and whose values are strings.  properties are used to convey additional information about the link relationship.
+	Properties   mapof.String `json:"properties,omitempty" bson:"properties,omitempty"` // Zero or more name/value pairs whose names are URIs and whose values are strings.  Properties are used to convey additional information about the link relationship.
 }
 
 // NewLink returns a fully initialized Link object.
@@ -23,10 +30,12 @@ func NewLink(relationType string, mediaType string, href string) Link {
 	return result
 }
 
+// IsEmpty returns TRUE if the Link object has no values set.
 func (link Link) IsEmpty() bool {
 	return link.RelationType == "" && link.MediaType == "" && link.Href == ""
 }
 
+// NotEmpty returns TRUE if the Link object has at least one value set.
 func (link Link) NotEmpty() bool {
 	return !link.IsEmpty()
 }
@@ -68,26 +77,34 @@ func (link Link) Matches(otherLink Link) bool {
 	return (link.MediaType == otherLink.MediaType) && (link.RelationType == otherLink.RelationType)
 }
 
+// GetString returns string values of this Link object
 func (link Link) GetString(name string) string {
 	result, _ := link.GetStringOK(name)
 	return result
 }
 
+// GetStringOK returns string values of this Link object
 func (link Link) GetStringOK(name string) (string, bool) {
 	switch name {
+
 	case "rel":
 		return link.RelationType, true
+
 	case "type":
 		return link.MediaType, true
+
 	case "href":
 		return link.Href, true
+
 	default:
 		return "", false
 	}
 }
 
+// SetString sets string values of this Link object
 func (link *Link) SetString(name string, value string) bool {
 	switch name {
+
 	case "rel":
 		link.RelationType = value
 		return true
@@ -105,8 +122,10 @@ func (link *Link) SetString(name string, value string) bool {
 	}
 }
 
+// GetPointer returns a reference to struct values of this Link object
 func (link *Link) GetPointer(name string) (interface{}, bool) {
 	switch name {
+
 	case "titles":
 		return &link.Titles, true
 
@@ -116,4 +135,33 @@ func (link *Link) GetPointer(name string) (interface{}, bool) {
 	default:
 		return nil, false
 	}
+}
+
+// UnmarshalJSON implements the json.Unmarshaller interface.
+// Link objects require a custom unmarshaller because we are working around
+// the non-standard oStatus "template" field that is used for oStatus Remote Follows.
+func (link *Link) UnmarshalJSON(data []byte) error {
+
+	temp := mapof.NewAny()
+
+	if err := json.Unmarshal(data, &temp); err != nil {
+		return derp.Wrap(err, "digit.Link.UnmarshalJSON", "Error unmarshalling JSON", string(data))
+	}
+
+	spew.Dump(temp)
+
+	link.RelationType = temp.GetString("rel")
+	link.MediaType = temp.GetString("type")
+	link.Titles = temp.GetMap("titles").MapOfString()
+	link.Properties = temp.GetMap("properties").MapOfString()
+
+	if href := temp.GetString("href"); href != "" {
+		link.Href = href
+	} else if template := temp.GetString("template"); template != "" {
+		link.Href = template
+	} else {
+		link.Href = ""
+	}
+
+	return nil
 }

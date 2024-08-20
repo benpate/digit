@@ -1,6 +1,7 @@
 package digit
 
 // Resource defines a single resource (such as a user or web page) that is being queried using the WebFinger protocol
+// https://datatracker.ietf.org/doc/html/rfc7033#section-4.4
 type Resource struct {
 	Subject    string            `json:"subject"`              // REQUIRED: URI that identifies the entity.
 	Aliases    []string          `json:"aliases,omitempty"`    // Zero or more  URI strings that identify the same entity as the "subject" URI
