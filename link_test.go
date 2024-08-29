@@ -138,3 +138,26 @@ func ExampleLink() {
 	link = link.Title("en-us", "The Magical World of Steve")
 	link = link.Title("fr", "Le Mondo Magique de Steve")
 }
+
+func TestCreateLinkWithSubscribeRequest(t *testing.T) {
+
+	link := NewLink("http://ostatus.org/schema/1.0/subscribe", "application/activity+json", "https://www.example.com/subscribe?uri={uri}")
+
+	require.Equal(t, "https://www.example.com/subscribe?uri={uri}", link.Template)
+	require.Equal(t, "", link.Href)
+	require.Equal(t, RelationTypeSubscribeRequest, link.RelationType)
+}
+
+func TestUnmarshalLinkWithSubscribeRequest(t *testing.T) {
+
+	link := Link{}
+	linkJSON := `{"rel":"http://ostatus.org/schema/1.0/subscribe", "template":"https://www.example.com/subscribe?uri={uri}", "type":"application/activity+json"}`
+
+	err := json.Unmarshal([]byte(linkJSON), &link)
+
+	require.Nil(t, err)
+	require.Equal(t, "https://www.example.com/subscribe?uri={uri}", link.Template)
+	require.Equal(t, "", link.Href)
+	require.Equal(t, RelationTypeSubscribeRequest, link.RelationType)
+	require.Equal(t, "application/activity+json", link.MediaType)
+}

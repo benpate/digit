@@ -24,6 +24,13 @@ func NewLink(relationType string, mediaType string, href string) Link {
 		Titles:       mapof.NewString(),
 		Properties:   mapof.NewString(),
 	}
+
+	// Special case for oStatus subscribe requests
+	if relationType == RelationTypeSubscribeRequest {
+		result.Template = result.Href
+		result.Href = ""
+	}
+
 	return result
 }
 
@@ -35,11 +42,6 @@ func (link Link) IsEmpty() bool {
 // NotEmpty returns TRUE if the Link object has at least one value set.
 func (link Link) NotEmpty() bool {
 	return !link.IsEmpty()
-}
-
-func (link Link) SetTemplate(template string) Link {
-	link.Template = template
-	return link
 }
 
 // Title populates a title value for the Link.
@@ -98,6 +100,9 @@ func (link Link) GetStringOK(name string) (string, bool) {
 	case "href":
 		return link.Href, true
 
+	case "template":
+		return link.Template, true
+
 	default:
 		return "", false
 	}
@@ -117,6 +122,10 @@ func (link *Link) SetString(name string, value string) bool {
 
 	case "href":
 		link.Href = value
+		return true
+
+	case "template":
+		link.Template = value
 		return true
 
 	default:
