@@ -1,9 +1,6 @@
 package digit
 
 import (
-	"encoding/json"
-
-	"github.com/benpate/derp"
 	"github.com/benpate/rosetta/mapof"
 )
 
@@ -15,6 +12,7 @@ type Link struct {
 	Href         string       `json:"href,omitempty"       bson:"href,omitempty"`       // URI of the target resource
 	Titles       mapof.String `json:"titles,omitempty"     bson:"titles,omitempty"`     // Map keys are either language tag (or the string "und"), values are the title of this object in that language.  If the language is unknown or unspecified, then the name is "und".
 	Properties   mapof.String `json:"properties,omitempty" bson:"properties,omitempty"` // Zero or more name/value pairs whose names are URIs and whose values are strings.  Properties are used to convey additional information about the link relationship.
+	Template     string       `json:"template,omitempty"   bson:"template,omitempty"`   // Non-standard URI template for the target resource (added by oStatus remote follows)
 }
 
 // NewLink returns a fully initialized Link object.
@@ -37,6 +35,11 @@ func (link Link) IsEmpty() bool {
 // NotEmpty returns TRUE if the Link object has at least one value set.
 func (link Link) NotEmpty() bool {
 	return !link.IsEmpty()
+}
+
+func (link Link) SetTemplate(template string) Link {
+	link.Template = template
+	return link
 }
 
 // Title populates a title value for the Link.
@@ -134,31 +137,4 @@ func (link *Link) GetPointer(name string) (interface{}, bool) {
 	default:
 		return nil, false
 	}
-}
-
-// UnmarshalJSON implements the json.Unmarshaller interface.
-// Link objects require a custom unmarshaller because we are working around
-// the non-standard oStatus "template" field that is used for oStatus Remote Follows.
-func (link *Link) UnmarshalJSON(data []byte) error {
-
-	temp := mapof.NewAny()
-
-	if err := json.Unmarshal(data, &temp); err != nil {
-		return derp.Wrap(err, "digit.Link.UnmarshalJSON", "Error unmarshalling JSON", string(data))
-	}
-
-	link.RelationType = temp.GetString("rel")
-	link.MediaType = temp.GetString("type")
-	link.Titles = temp.GetMap("titles").MapOfString()
-	link.Properties = temp.GetMap("properties").MapOfString()
-
-	if href := temp.GetString("href"); href != "" {
-		link.Href = href
-	} else if template := temp.GetString("template"); template != "" {
-		link.Href = template
-	} else {
-		link.Href = ""
-	}
-
-	return nil
 }

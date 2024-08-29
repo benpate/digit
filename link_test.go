@@ -1,6 +1,7 @@
 package digit
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/benpate/rosetta/mapof"
@@ -90,7 +91,7 @@ func TestUnmarshalLinkWithTitles(t *testing.T) {
 	link := Link{}
 	linkJSON := `{"href":"example.com", "rel":"example", "type":"text/plain", "titles":{"und":"Example", "es":"Ejemplo"}}`
 
-	err := link.UnmarshalJSON([]byte(linkJSON))
+	err := json.Unmarshal([]byte(linkJSON), &link)
 
 	require.Nil(t, err)
 	require.Equal(t, "example.com", link.Href)
@@ -105,7 +106,7 @@ func TestUnmarshalLinkWithProperties(t *testing.T) {
 	link := Link{}
 	linkJSON := `{"href":"example.com", "rel":"example", "type":"text/plain", "properties":{"one":"ONE", "two":"TWO"}}`
 
-	err := link.UnmarshalJSON([]byte(linkJSON))
+	err := json.Unmarshal([]byte(linkJSON), &link)
 
 	require.Nil(t, err)
 	require.Equal(t, "example.com", link.Href)
@@ -120,10 +121,10 @@ func TestUnmarshalLinkWithTemplate(t *testing.T) {
 	link := Link{}
 	linkJSON := `{"template":"example.com?one={one}", "rel":"example", "type":"text/plain"}`
 
-	err := link.UnmarshalJSON([]byte(linkJSON))
+	err := json.Unmarshal([]byte(linkJSON), &link)
 
 	require.Nil(t, err)
-	require.Equal(t, "example.com?one={one}", link.Href)
+	require.Equal(t, "example.com?one={one}", link.Template)
 	require.Equal(t, "example", link.RelationType)
 	require.Equal(t, "text/plain", link.MediaType)
 }
