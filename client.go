@@ -21,5 +21,5 @@ func Lookup(url string, options ...remote.Option) (Resource, error) {
 		}
 	}
 
-	return result, derp.NewInternalError("digit.Lookup", "Unable to load resource", url, webFingerServerURLs)
+	return result, derp.InternalError("digit.Lookup", "Unable to load resource", url, webFingerServerURLs)
 }
