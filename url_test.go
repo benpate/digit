@@ -108,11 +108,6 @@ func TestParseURL_WeirdStuff5(t *testing.T) {
 	require.Equal(t, 1, len(webFingerURLs))
 	require.Equal(t, "https://sky.net/.well-known/webfinger?resource=acct:https://sky.net/sarah", webFingerURLs[0])
 
-	/*/ Test Remote Address without a protocol and an "@" <- This breaks because it's a valid email address.
-	webFingerURLs = ParseAccount("sky.net/@sarah")
-	require.Equal(t, 1, len(webFingerURLs))
-	require.Equal(t, "https://sarah/.well-known/webfinger?resource=acct:https://sky.net/@sarah", webFingerURLs[0])
-	*/
 }
 
 func TestIsValidhostName(t *testing.T) {
