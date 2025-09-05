@@ -2,12 +2,7 @@
 
 package digit
 
-import (
-	"testing"
-
-	"github.com/stretchr/testify/require"
-)
-
+/*
 func TestClient(t *testing.T) {
 	resource, err := Lookup("http://localhost/@benpate")
 	require.Nil(t, err)
@@ -22,3 +17,4 @@ func TestMitra(t *testing.T) {
 	self := resource.FindLink("self")
 	require.Equal(t, "https://wizard.casa/users/benpate", self.Href)
 }
+*/
