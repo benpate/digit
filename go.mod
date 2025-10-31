@@ -11,8 +11,6 @@ require (
 )
 
 require (
-	github.com/PuerkitoBio/goquery v1.10.3 // indirect
-	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/benpate/exp v0.8.7 // indirect
 	github.com/benpate/turbine v0.4.2 // indirect
