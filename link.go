@@ -1,6 +1,8 @@
 package digit
 
 import (
+	"strings"
+
 	"github.com/benpate/rosetta/mapof"
 )
 
@@ -26,7 +28,8 @@ func NewLink(relationType string, mediaType string, href string) Link {
 	}
 
 	// Special case for oStatus subscribe requests
-	if relationType == RelationTypeSubscribeRequest {
+	// and FEP-3b86 intent links
+	if relationType == RelationTypeSubscribeRequest || strings.HasPrefix(relationType, RelationTypeFEP3b86Prefix) {
 		result.Template = result.Href
 		result.Href = ""
 	}

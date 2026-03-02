@@ -148,6 +148,33 @@ func TestCreateLinkWithSubscribeRequest(t *testing.T) {
 	require.Equal(t, RelationTypeSubscribeRequest, link.RelationType)
 }
 
+func TestCreateLinkWithFEP3b86(t *testing.T) {
+
+	link := NewLink(RelationTypeFEP3b86Prefix+"Create", "", "https://www.example.com/intent/create?type={type}&content={content}")
+
+	require.Equal(t, "https://www.example.com/intent/create?type={type}&content={content}", link.Template)
+	require.Equal(t, "", link.Href)
+	require.Equal(t, RelationTypeFEP3b86Prefix+"Create", link.RelationType)
+}
+
+func TestCreateLinkWithFEP3b86Follow(t *testing.T) {
+
+	link := NewLink(RelationTypeFEP3b86Prefix+"Follow", "", "https://www.example.com/intent/follow?object={object}")
+
+	require.Equal(t, "https://www.example.com/intent/follow?object={object}", link.Template)
+	require.Equal(t, "", link.Href)
+	require.Equal(t, RelationTypeFEP3b86Prefix+"Follow", link.RelationType)
+}
+
+func TestCreateLinkWithFEP3b86Like(t *testing.T) {
+
+	link := NewLink(RelationTypeFEP3b86Prefix+"Like", "", "https://www.example.com/intent/like?object={object}")
+
+	require.Equal(t, "https://www.example.com/intent/like?object={object}", link.Template)
+	require.Equal(t, "", link.Href)
+	require.Equal(t, RelationTypeFEP3b86Prefix+"Like", link.RelationType)
+}
+
 func TestUnmarshalLinkWithSubscribeRequest(t *testing.T) {
 
 	link := Link{}
