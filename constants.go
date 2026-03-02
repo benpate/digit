@@ -23,4 +23,8 @@ const RelationTypeSelf = "self"
 // See: https://pubsubhubbub.github.io/PubSubHubbub/pubsubhubbub-core-0.4.html#anchor4
 const RelationTypeHub = "hub"
 
+// RelationTypeFEP3b86Prefix is the prefix for FEP-3b86 interaction links.
+// See: https://w3id.org/fep/3b86/
+const RelationTypeFEP3b86Prefix = "https://w3id.org/fep/3b86/"
+
 // Additional values to consider adding: http://microformats.org/wiki/existing-rel-values
