@@ -39,8 +39,9 @@ func (set *LinkSet) Apply(link Link) {
 	*set = append(*set, link)
 }
 
-// Remove removes all items from the set that match the given link (having identical "rel"
-// and "type" properties)
+// Remove deletes ALL items that match the given link (identical "rel" and "type").
+// It mutates the set in place, so callers must not rely on slices that alias the
+// same backing array.
 func (set *LinkSet) Remove(link Link) {
 	// Iterate backwards so that removing an item does not shift the indexes
 	// of the items we have not yet inspected.
@@ -62,7 +63,8 @@ func (set LinkSet) FindBy(name string, value string) Link {
 	return NewLink("", "", "")
 }
 
-// RemoveBy removes the first link with a property that matches the given value
+// RemoveBy deletes the FIRST link whose named property matches the given value.
+// Unlike Remove, it stops after one match. It mutates the set in place.
 func (set *LinkSet) RemoveBy(name string, value string) {
 	for index, link := range *set {
 		if link.GetString(name) == value {
@@ -72,7 +74,8 @@ func (set *LinkSet) RemoveBy(name string, value string) {
 	}
 }
 
-// ApplyBy searches for a matching link, updates it if found, and appends it if not
+// ApplyBy updates the first link whose named property matches the given link's,
+// or appends the link if none match. It mutates the set in place.
 func (set *LinkSet) ApplyBy(name string, link Link) {
 	keyID := link.GetString(name)
 	for index, target := range *set {

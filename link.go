@@ -28,8 +28,8 @@ func NewLink(relationType string, mediaType string, href string) Link {
 		Properties:   mapof.NewString(),
 	}
 
-	// Special case for oStatus subscribe requests
-	// and FEP-3b86 intent links
+	// oStatus subscribe requests and FEP-3b86 intent links carry their URL in a
+	// "template" field, so move the Href into Template for those relation types.
 	if relationType == RelationTypeSubscribeRequest || strings.HasPrefix(relationType, RelationTypeFEP3b86Prefix) {
 		result.Template = result.Href
 		result.Href = ""
@@ -99,13 +99,14 @@ func (link Link) Matches(otherLink Link) bool {
 	return (link.MediaType == otherLink.MediaType) && (link.RelationType == otherLink.RelationType)
 }
 
-// GetString returns string values of this Link object
+// GetString returns the named string property of this Link, or "" if the name is not recognized.
 func (link Link) GetString(name string) string {
 	result, _ := link.GetStringOK(name)
 	return result
 }
 
-// GetStringOK returns string values of this Link object
+// GetStringOK returns the named string property of this Link, and a boolean that
+// is TRUE when the property name is recognized.
 func (link Link) GetStringOK(name string) (string, bool) {
 	switch name {
 
@@ -126,7 +127,8 @@ func (link Link) GetStringOK(name string) (string, bool) {
 	}
 }
 
-// SetString sets string values of this Link object
+// SetString sets the named string property of this Link, and returns TRUE when
+// the property name is recognized.
 func (link *Link) SetString(name string, value string) bool {
 	switch name {
 
@@ -151,8 +153,9 @@ func (link *Link) SetString(name string, value string) bool {
 	}
 }
 
-// GetPointer returns a reference to struct values of this Link object
-func (link *Link) GetPointer(name string) (interface{}, bool) {
+// GetPointer returns a pointer to the named map property ("titles" or "properties")
+// of this Link, and a boolean that is TRUE when the property name is recognized.
+func (link *Link) GetPointer(name string) (any, bool) {
 	switch name {
 
 	case "titles":
