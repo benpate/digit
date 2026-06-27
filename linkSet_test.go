@@ -153,3 +153,60 @@ func TestLinkSet(t *testing.T) {
 	set.RemoveBy("rel", "missing")
 	require.Zero(t, len(set))
 }
+
+// TestLinkSet_RemoveBy_FirstOnly pins the documented asymmetry between Remove and
+// RemoveBy: Remove deletes every match, but RemoveBy deletes only the first.
+func TestLinkSet_RemoveBy_FirstOnly(t *testing.T) {
+
+	set := NewLinkSet(0)
+	set.Append(
+		NewLink("friend", "text/html", "http://example.com/a"),
+		NewLink("friend", "text/html", "http://example.com/b"),
+		NewLink("parent", "application/json", "http://example.com/parent"),
+	)
+
+	// RemoveBy stops after the first matching link, leaving the second "friend".
+	set.RemoveBy("rel", "friend")
+
+	require.Equal(t, 2, len(set))
+	require.Equal(t, "http://example.com/b", set[0].Href)
+	require.Equal(t, "parent", set[1].RelationType)
+}
+
+// TestLinkSet_InPlaceMutation_AliasingClobbers pins the documented contract that
+// the LinkSet mutators rewrite the shared backing array, so a slice that aliases
+// the same array sees the mutation. Callers must clone first for independence.
+func TestLinkSet_InPlaceMutation_AliasingClobbers(t *testing.T) {
+
+	set := NewLinkSet(0)
+	set.Append(
+		NewLink("friend", "text/html", "http://example.com/friend"),
+		NewLink("parent", "application/json", "http://example.com/parent"),
+	)
+
+	// alias shares set's backing array.
+	alias := set
+
+	// Removing the first element shifts "parent" into index 0 of the shared array.
+	set.RemoveBy("rel", "friend")
+
+	require.Equal(t, 1, len(set))
+	require.Equal(t, "parent", set[0].RelationType)
+
+	// The alias's header still has length 2, but its underlying data was clobbered:
+	// index 0 now holds "parent" instead of the original "friend".
+	require.Equal(t, 2, len(alias))
+	require.Equal(t, "parent", alias[0].RelationType)
+}
+
+// TestLinkSet_Remove_Empty confirms the mutators never panic on an empty set.
+func TestLinkSet_Remove_Empty(t *testing.T) {
+
+	set := NewLinkSet(0)
+
+	set.Remove(NewLink("friend", "text/html", ""))
+	require.Zero(t, len(set))
+
+	set.RemoveBy("rel", "friend")
+	require.Zero(t, len(set))
+}
