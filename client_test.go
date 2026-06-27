@@ -5,9 +5,20 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/benpate/remote"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+// allowPrivateIPs lets a test reach a loopback httptest server. remote blocks
+// non-public IPs by default (SSRF protection), so the guard must be disabled
+// before the request is sent.
+var allowPrivateIPs = remote.Option{
+	BeforeRequest: func(txn *remote.Transaction) error {
+		txn.AllowPrivateIPs(true)
+		return nil
+	},
+}
 
 func TestLookup(t *testing.T) {
 
@@ -22,7 +33,7 @@ func TestLookup(t *testing.T) {
 	}))
 	t.Cleanup(server.Close)
 
-	resource, err := Lookup(server.URL + "/@sarah")
+	resource, err := Lookup(server.URL+"/@sarah", allowPrivateIPs)
 
 	require.Nil(t, err)
 	require.Equal(t, "acct:sarah@sky.net", resource.Subject)
@@ -47,7 +58,7 @@ func TestLookup_ServerError(t *testing.T) {
 	}))
 	t.Cleanup(server.Close)
 
-	_, err := Lookup(server.URL + "/@sarah")
+	_, err := Lookup(server.URL+"/@sarah", allowPrivateIPs)
 	require.NotNil(t, err)
 }
 
