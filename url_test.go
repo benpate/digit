@@ -3,7 +3,7 @@ package digit
 import (
 	"testing"
 
-	"github.com/benpate/domain"
+	"github.com/benpate/uri"
 	"github.com/stretchr/testify/require"
 )
 
@@ -74,17 +74,10 @@ func TestParseURL_WeirdStuff(t *testing.T) {
 
 func TestParseURL_WeirdStuff2(t *testing.T) {
 
-	// This is actually a valid URL
+	// "@john" resolves to the single-label host "john", which is not a valid
+	// hostname (a public domain needs at least two segments), so no WebFinger URL.
 	webFingerURLs := ParseAccount("https://@john")
-	require.Equal(t, 1, len(webFingerURLs))
-}
-
-func TestParseURL_WeirdStuff3(t *testing.T) {
-
-	// But this one isn't because the host is missing
-	webFingerURLs := ParseAccount("https://@john")
-	require.Equal(t, 1, len(webFingerURLs))
-	require.Equal(t, "https://@john/.well-known/webfinger?resource=acct%3Ahttps%3A%2F%2F%40john", webFingerURLs[0])
+	require.Equal(t, 0, len(webFingerURLs))
 }
 
 func TestParseURL_WeirdStuff4(t *testing.T) {
@@ -156,8 +149,8 @@ func TestParseAccount_ResourceURL(t *testing.T) {
 }
 
 func TestIsValidhostName(t *testing.T) {
-	require.True(t, domain.IsValidHostname("localhost"))
-	require.True(t, domain.IsValidHostname("127.0.0.1"))
+	require.True(t, uri.IsValidHostname("localhost"))
+	require.True(t, uri.IsValidHostname("127.0.0.1"))
 }
 
 // FuzzParseAccount throws arbitrary account strings at the parser and verifies

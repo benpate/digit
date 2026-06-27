@@ -4,8 +4,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/benpate/domain"
 	"github.com/benpate/rosetta/list"
+	"github.com/benpate/uri"
 )
 
 // ParseAccount returns a slice of potential WebFinger URLs for a given username.
@@ -35,7 +35,7 @@ func ParseAccount(account string) []string {
 	}
 
 	// If this is localhost, then try http://
-	if domain.IsLocalhost(account) {
+	if uri.IsLocalHostname(account) {
 		if webFingerURL := parseAccount_ResourceURL("http://" + account); webFingerURL != "" {
 			result = append(result, webFingerURL)
 		}
@@ -66,7 +66,7 @@ func parseAccount_AsHandle(account string) []string {
 
 	// RULE: Strip Port number and see if the hostname is valid.
 	// If not, we've read the account wrong, and it's not a handle
-	if domain.NotValidHostname(hostname) {
+	if uri.NotValidHostname(uri.NormalizeHost(hostname)) {
 		return make([]string, 0)
 	}
 
@@ -80,7 +80,7 @@ func parseAccount_AsHandle(account string) []string {
 	result := []string{"https://" + urlWithoutProtocol}
 
 	// Allow HTTP for localhost (for testing purposes)
-	if domain.IsLocalhost(hostname) {
+	if uri.IsLocalHostname(hostname) {
 		result = append(result, "http://"+urlWithoutProtocol)
 	}
 
@@ -97,7 +97,7 @@ func parseAccount_ResourceURL(resource string) string {
 		return ""
 	}
 
-	if domain.NotValidHostname(urlValue.Host) {
+	if uri.NotValidHostname(uri.NormalizeHost(urlValue.Host)) {
 		return ""
 	}
 
