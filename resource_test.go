@@ -171,3 +171,49 @@ func ExampleResource() {
 	fmt.Print(resource.Subject)
 	// Output: acct:sarah@sky.net
 }
+
+// TestResource_ChainedBuildersDoNotAlias verifies that two chains branching from
+// the same Resource each get an independent copy of the Aliases and Links slices.
+func TestResource_ChainedBuildersDoNotAlias(t *testing.T) {
+
+	// Build a base Resource whose slices have spare capacity (len 3, cap 4),
+	// which is the condition that lets append() write through a shared array.
+	base := NewResource("acct:john@connor.com").
+		Alias("one").Alias("two").Alias("three").
+		Link("1", "text/html", "https://one").
+		Link("2", "text/html", "https://two").
+		Link("3", "text/html", "https://three")
+
+	require.Greater(t, cap(base.Aliases), len(base.Aliases))
+	require.Greater(t, cap(base.Links), len(base.Links))
+
+	// Branch twice from the same base
+	branchA := base.Alias("A").Link("a", "text/html", "https://A")
+	branchB := base.Alias("B").Link("b", "text/html", "https://B")
+
+	// Neither branch may see the other's values
+	require.Equal(t, []string{"one", "two", "three", "A"}, branchA.Aliases)
+	require.Equal(t, []string{"one", "two", "three", "B"}, branchB.Aliases)
+	require.Equal(t, "https://A", branchA.Links[3].Href)
+	require.Equal(t, "https://B", branchB.Links[3].Href)
+
+	// ...and the base must be untouched by either branch
+	require.Equal(t, []string{"one", "two", "three"}, base.Aliases)
+	require.Equal(t, 3, len(base.Links))
+}
+
+// TestResource_AddLinkDoesNotAlias verifies the same independence for AddLink.
+func TestResource_AddLinkDoesNotAlias(t *testing.T) {
+
+	base := NewResource("acct:john@connor.com").
+		AddLink(NewLink("1", "text/html", "https://one")).
+		AddLink(NewLink("2", "text/html", "https://two")).
+		AddLink(NewLink("3", "text/html", "https://three"))
+
+	branchA := base.AddLink(NewLink("a", "text/html", "https://A"))
+	branchB := base.AddLink(NewLink("b", "text/html", "https://B"))
+
+	require.Equal(t, "https://A", branchA.Links[3].Href)
+	require.Equal(t, "https://B", branchB.Links[3].Href)
+	require.Equal(t, 3, len(base.Links))
+}

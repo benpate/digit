@@ -1,6 +1,9 @@
 package digit
 
-import "maps"
+import (
+	"maps"
+	"slices"
+)
 
 // Resource defines a single resource (such as a user or web page) that is being queried using the WebFinger protocol
 // https://datatracker.ietf.org/doc/html/rfc7033#section-4.4
@@ -23,7 +26,10 @@ func NewResource(subject string) Resource {
 
 // Alias adds an alias (additional URI) to this Resource.  It returns the updated Resource so that calls can be chained.
 func (resource Resource) Alias(URI string) Resource {
-	resource.Aliases = append(resource.Aliases, URI)
+	// Clip the slice so that append always allocates. Without this, two chained
+	// calls branching from the same Resource would write into a shared backing
+	// array and clobber each other.
+	resource.Aliases = append(slices.Clip(resource.Aliases), URI)
 	return resource
 }
 
@@ -42,13 +48,14 @@ func (resource Resource) Property(name string, value string) Resource {
 
 // Link adds a link to this Resource.  It returns the updated Resource so that calls can be chained.
 func (resource Resource) Link(relationType string, mediaType string, href string) Resource {
-	resource.Links = append(resource.Links, NewLink(relationType, mediaType, href))
-	return resource
+	return resource.AddLink(NewLink(relationType, mediaType, href))
 }
 
 // AddLink adds a link to this Resource.  It returns the updated Resource so that calls can be chained.
 func (resource Resource) AddLink(link Link) Resource {
-	resource.Links = append(resource.Links, link)
+	// Clip the slice so that append always allocates, keeping chained calls
+	// that branch from the same Resource from clobbering each other.
+	resource.Links = append(slices.Clip(resource.Links), link)
 	return resource
 }
 

@@ -87,7 +87,7 @@ func parseAccount_AsHandle(account string) []string {
 	return result
 }
 
-// parseAccount_AsResourceURL translates a standard URL into a WebFinger
+// parseAccount_ResourceURL translates a standard URL into a WebFinger
 // account lookup using the standard "well-known" path and query parameters.
 func parseAccount_ResourceURL(resource string) string {
 
